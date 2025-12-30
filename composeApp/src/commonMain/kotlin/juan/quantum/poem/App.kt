@@ -62,42 +62,38 @@ fun SignPostScreen(
                 textAlign = TextAlign.Center
             )
 
-            // Boards + text (positions tuned to match your example)
-            BoardWithText(
-                board = painterResource(Res.drawable.board_1),
-                text = texts.top,
-                textStyle = style,
-                modifier = Modifier
-//                    .absoluteOffset(x = (0.18f * constraints.maxWidth).toInt(), y = (0.02f * constraints.maxHeight).toInt())
-//                    .width((0.64f * constraints.maxWidth).toDp())
-            )
+            Column {
+                BoardWithText(
+                    board = painterResource(Res.drawable.board_1),
+                    text = texts.top,
+                    textStyle = style,
+                    modifier = Modifier
+                )
 
-            BoardWithText(
-                board = painterResource(Res.drawable.board_2),
-                text = texts.second,
-                textStyle = style,
-                modifier = Modifier
-//                    .absoluteOffset(x = (0.21f * constraints.maxWidth).toInt(), y = (0.18f * constraints.maxHeight).toInt())
-//                    .width((0.66f * constraints.maxWidth).toDp())
-            )
+                BoardWithText(
+                    board = painterResource(Res.drawable.board_2),
+                    text = texts.second,
+                    textStyle = style,
+                    modifier = Modifier,
+                    textOffsetY = (10).toDp()
+                )
 
-            BoardWithText(
-                board = painterResource(Res.drawable.board_3),
-                text = texts.third,
-                textStyle = style,
-                modifier = Modifier
-//                    .absoluteOffset(x = (0.18f * constraints.maxWidth).toInt(), y = (0.38f * constraints.maxHeight).toInt())
-//                    .width((0.65f * constraints.maxWidth).toDp())
-            )
+                BoardWithText(
+                    board = painterResource(Res.drawable.board_3),
+                    text = texts.third,
+                    textStyle = style,
+                    modifier = Modifier,
+                    textOffsetY = (-80).toDp()
+                )
 
-            BoardWithText(
-                board = painterResource(Res.drawable.board_4),
-                text = texts.bottom,
-                textStyle = style,
-                modifier = Modifier
-//                    .absoluteOffset(x = (0.22f * constraints.maxWidth).toInt(), y = (0.54f * constraints.maxHeight).toInt())
-//                    .width((0.65f * constraints.maxWidth).toDp())
-            )
+                BoardWithText(
+                    board = painterResource(Res.drawable.board_4),
+                    text = texts.bottom,
+                    textStyle = style,
+                    modifier = Modifier,
+                    textOffsetY = (-60).toDp()
+                )
+            }
         }
     }
 }
@@ -108,7 +104,8 @@ private fun BoardWithText(
     board: androidx.compose.ui.graphics.painter.Painter,
     text: String,
     textStyle: TextStyle,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textOffsetY: Dp = (0).dp
 ) {
     Box(
         modifier = modifier,
@@ -118,15 +115,13 @@ private fun BoardWithText(
             painter = board,
             contentDescription = null,
             modifier = Modifier.fillMaxWidth(),
-            contentScale = ContentScale.Fit
+            contentScale = ContentScale.FillBounds
         )
 
         Text(
             text = text,
             style = textStyle,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 22.dp, vertical = 12.dp)
+            modifier = Modifier.offset(x = 0.dp, y = textOffsetY)
         )
     }
 }
