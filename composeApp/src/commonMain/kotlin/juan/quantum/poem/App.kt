@@ -2,13 +2,8 @@
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -16,6 +11,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -72,6 +69,15 @@ fun SignPostScreen(
     )
 
     var boards by remember(texts) { mutableStateOf(initialBoards) }
+    
+    val scope = rememberCoroutineScope()
+    val updateEvent = remember { MutableSharedFlow<Unit>() }
+
+    LaunchedEffect(Unit) {
+        updateEvent.collect {
+            boards = boards.shuffled()
+        }
+    }
 
     // keep same “post” proportion
     BoxWithConstraints(
@@ -101,14 +107,18 @@ fun SignPostScreen(
             }
         }
 
-//        FloatingActionButton(
-//            onClick = { boards = boards.shuffled() },
-//            modifier = Modifier
-//                .align(Alignment.BottomEnd)
-//                .padding(16.dp)
-//        ) {
-//            Text("TEst")
-//        }
+        FloatingActionButton(
+            onClick = {
+                scope.launch {
+                    updateEvent.emit(Unit)
+                }
+            },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Text("TEst")
+        }
     }
 }
 
