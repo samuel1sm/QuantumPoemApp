@@ -1,7 +1,14 @@
 // shared/src/commonMain/kotlin/SignPostScreen.kt
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -9,9 +16,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
-import androidx.compose.material3.Text
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import quantumpoemapp.composeapp.generated.resources.Res
 import quantumpoemapp.composeapp.generated.resources.background
@@ -43,6 +49,30 @@ fun SignPostScreen(
     ),
     modifier: Modifier = Modifier
 ) {
+    val initialBoards = listOf(
+        BoardWithTextModel(
+            board = Res.drawable.board_1,
+            text = texts.top
+        ),
+        BoardWithTextModel(
+            board = Res.drawable.board_2,
+            text = texts.second,
+            textOffsetY = (10).toDp()
+        ),
+        BoardWithTextModel(
+            board = Res.drawable.board_3,
+            text = texts.third,
+            textOffsetY = (-80).toDp()
+        ),
+        BoardWithTextModel(
+            board = Res.drawable.board_4,
+            text = texts.bottom,
+            textOffsetY = (-60).toDp()
+        )
+    )
+
+    var boards by remember(texts) { mutableStateOf(initialBoards) }
+
     // keep same “post” proportion
     BoxWithConstraints(
         modifier = modifier.fillMaxSize(),
@@ -61,28 +91,6 @@ fun SignPostScreen(
             )
 
             Column {
-                val boards = listOf(
-                    BoardWithTextModel(
-                        board = Res.drawable.board_1,
-                        text = texts.top
-                    ),
-                    BoardWithTextModel(
-                        board = Res.drawable.board_2,
-                        text = texts.second,
-                        textOffsetY = (10).toDp()
-                    ),
-                    BoardWithTextModel(
-                        board = Res.drawable.board_3,
-                        text = texts.third,
-                        textOffsetY = (-80).toDp()
-                    ),
-                    BoardWithTextModel(
-                        board = Res.drawable.board_4,
-                        text = texts.bottom,
-                        textOffsetY = (-60).toDp()
-                    )
-                )
-
                 boards.forEach { item ->
                     BoardWithText(
                         board = item.board,
@@ -92,6 +100,15 @@ fun SignPostScreen(
                 }
             }
         }
+
+//        FloatingActionButton(
+//            onClick = { boards = boards.shuffled() },
+//            modifier = Modifier
+//                .align(Alignment.BottomEnd)
+//                .padding(16.dp)
+//        ) {
+//            Text("TEst")
+//        }
     }
 }
 
