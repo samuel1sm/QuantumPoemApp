@@ -16,12 +16,14 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import quantumpoemapp.composeapp.generated.resources.ComingSoon_Regular
 import quantumpoemapp.composeapp.generated.resources.Res
 import quantumpoemapp.composeapp.generated.resources.background
 import quantumpoemapp.composeapp.generated.resources.board_1
 import quantumpoemapp.composeapp.generated.resources.board_2
 import quantumpoemapp.composeapp.generated.resources.board_3
 import quantumpoemapp.composeapp.generated.resources.board_4
+import juan.quantum.poem.AppFonts
 
 data class SignText(
     val top: String,
@@ -117,7 +119,7 @@ fun SignPostScreen(
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
         ) {
-            Text("TEst")
+            Text("Shuffle")
         }
     }
 }
@@ -132,6 +134,8 @@ private fun BoardWithText(
 ) {
     val textStyle = TextStyle(
         color = Color(0xFFF2F2F2),
+        fontFamily = AppFonts.ComingSoonFamily(),
+        fontWeight = androidx.compose.ui.text.font.FontWeight.ExtraBold,
         fontSize = 22.sp,
         lineHeight = 24.sp,
         textAlign = TextAlign.Center
