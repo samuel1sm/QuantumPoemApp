@@ -55,25 +55,16 @@ fun SignPostScreen(
                 contentScale = ContentScale.Crop
             )
 
-            val style = TextStyle(
-                color = Color(0xFFF2F2F2),
-                fontSize = 22.sp,
-                lineHeight = 24.sp,
-                textAlign = TextAlign.Center
-            )
-
             Column {
                 BoardWithText(
                     board = painterResource(Res.drawable.board_1),
                     text = texts.top,
-                    textStyle = style,
                     modifier = Modifier
                 )
 
                 BoardWithText(
                     board = painterResource(Res.drawable.board_2),
                     text = texts.second,
-                    textStyle = style,
                     modifier = Modifier,
                     textOffsetY = (10).toDp()
                 )
@@ -81,7 +72,6 @@ fun SignPostScreen(
                 BoardWithText(
                     board = painterResource(Res.drawable.board_3),
                     text = texts.third,
-                    textStyle = style,
                     modifier = Modifier,
                     textOffsetY = (-80).toDp()
                 )
@@ -89,7 +79,6 @@ fun SignPostScreen(
                 BoardWithText(
                     board = painterResource(Res.drawable.board_4),
                     text = texts.bottom,
-                    textStyle = style,
                     modifier = Modifier,
                     textOffsetY = (-60).toDp()
                 )
@@ -103,10 +92,16 @@ fun SignPostScreen(
 private fun BoardWithText(
     board: androidx.compose.ui.graphics.painter.Painter,
     text: String,
-    textStyle: TextStyle,
     modifier: Modifier = Modifier,
     textOffsetY: Dp = (0).dp
 ) {
+    val textStyle = TextStyle(
+        color = Color(0xFFF2F2F2),
+        fontSize = 22.sp,
+        lineHeight = 24.sp,
+        textAlign = TextAlign.Center
+    )
+
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
