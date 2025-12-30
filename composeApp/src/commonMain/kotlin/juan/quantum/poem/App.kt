@@ -11,6 +11,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import androidx.compose.material3.Text
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import quantumpoemapp.composeapp.generated.resources.Res
 import quantumpoemapp.composeapp.generated.resources.background
@@ -26,6 +27,12 @@ data class SignText(
     val bottom: String
 )
 
+data class BoardWithTextModel(
+    val board: DrawableResource,
+    val text: String,
+    val textOffsetY: Dp = 0.dp
+)
+
 @Composable
 fun SignPostScreen(
     texts: SignText = SignText(
@@ -38,9 +45,7 @@ fun SignPostScreen(
 ) {
     // keep same “post” proportion
     BoxWithConstraints(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(12.dp),
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Box(
@@ -56,32 +61,35 @@ fun SignPostScreen(
             )
 
             Column {
-                BoardWithText(
-                    board = painterResource(Res.drawable.board_1),
-                    text = texts.top,
-                    modifier = Modifier
+                val boards = listOf(
+                    BoardWithTextModel(
+                        board = Res.drawable.board_1,
+                        text = texts.top
+                    ),
+                    BoardWithTextModel(
+                        board = Res.drawable.board_2,
+                        text = texts.second,
+                        textOffsetY = (10).toDp()
+                    ),
+                    BoardWithTextModel(
+                        board = Res.drawable.board_3,
+                        text = texts.third,
+                        textOffsetY = (-80).toDp()
+                    ),
+                    BoardWithTextModel(
+                        board = Res.drawable.board_4,
+                        text = texts.bottom,
+                        textOffsetY = (-60).toDp()
+                    )
                 )
 
-                BoardWithText(
-                    board = painterResource(Res.drawable.board_2),
-                    text = texts.second,
-                    modifier = Modifier,
-                    textOffsetY = (10).toDp()
-                )
-
-                BoardWithText(
-                    board = painterResource(Res.drawable.board_3),
-                    text = texts.third,
-                    modifier = Modifier,
-                    textOffsetY = (-80).toDp()
-                )
-
-                BoardWithText(
-                    board = painterResource(Res.drawable.board_4),
-                    text = texts.bottom,
-                    modifier = Modifier,
-                    textOffsetY = (-60).toDp()
-                )
+                boards.forEach { item ->
+                    BoardWithText(
+                        board = item.board,
+                        text = item.text,
+                        textOffsetY = item.textOffsetY
+                    )
+                }
             }
         }
     }
@@ -90,10 +98,10 @@ fun SignPostScreen(
 
 @Composable
 private fun BoardWithText(
-    board: androidx.compose.ui.graphics.painter.Painter,
+    board: DrawableResource,
     text: String,
     modifier: Modifier = Modifier,
-    textOffsetY: Dp = (0).dp
+    textOffsetY: Dp = 0.dp
 ) {
     val textStyle = TextStyle(
         color = Color(0xFFF2F2F2),
@@ -107,7 +115,7 @@ private fun BoardWithText(
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = board,
+            painter = painterResource(board),
             contentDescription = null,
             modifier = Modifier.fillMaxWidth(),
             contentScale = ContentScale.FillBounds
