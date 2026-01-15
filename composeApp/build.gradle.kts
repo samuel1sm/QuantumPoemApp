@@ -29,6 +29,13 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            val cameraxVersion = "1.3.1"
+            implementation("androidx.camera:camera-core:${cameraxVersion}")
+            implementation("androidx.camera:camera-camera2:${cameraxVersion}")
+            implementation("androidx.camera:camera-lifecycle:${cameraxVersion}")
+            implementation("androidx.camera:camera-view:${cameraxVersion}")
+            implementation("androidx.camera:camera-extensions:${cameraxVersion}")
+            implementation("com.google.mediapipe:tasks-vision:0.10.29")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -76,4 +83,3 @@ android {
 dependencies {
     debugImplementation(compose.uiTooling)
 }
-
