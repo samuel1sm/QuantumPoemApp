@@ -75,7 +75,7 @@ private fun CameraWithFaceDetection(
     val coroutineScope = rememberCoroutineScope()
     
     var faceLandmarkerResult by remember { mutableStateOf<FaceLandmarkerResult?>(null) }
-    var observerPresent by remember { mutableStateOf(false) }
+    var observersCount by remember { mutableStateOf(0) }
 
     val cameraExecutor: ExecutorService = remember { Executors.newSingleThreadExecutor() }
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
@@ -85,31 +85,36 @@ private fun CameraWithFaceDetection(
         val options = FaceLandmarker.FaceLandmarkerOptions.builder()
             .setBaseOptions(baseOptions)
             .setRunningMode(RunningMode.LIVE_STREAM)
-            .setNumFaces(1)
+            .setNumFaces(5) // Detect up to 5 faces
             .setOutputFaceBlendshapes(true)
             .setResultListener { result, _ ->
                 faceLandmarkerResult = result
                 
-                val landmarks = result.faceLandmarks()
-                val blendshapes = result.faceBlendshapes()
+                val landmarksList = result.faceLandmarks()
+                val blendshapesOpt = result.faceBlendshapes()
                 
-                val isWatching = if (landmarks.isNotEmpty() && blendshapes.isPresent && blendshapes.get().isNotEmpty()) {
-                    val categories = blendshapes.get()[0]
-                    
-                    val leftBlink = categories.find { it.categoryName() == "eyeBlinkLeft" }?.score() ?: 1f
-                    val rightBlink = categories.find { it.categoryName() == "eyeBlinkRight" }?.score() ?: 1f
-                    
-                    leftBlink < 0.3f || rightBlink < 0.3f
-                } else {
-                    false
-                }
-
-                if (isWatching != observerPresent) {
-                    observerPresent = isWatching
-                    if (!isWatching) {
-                        coroutineScope.launch { updateEvent.emit(Unit) }
+                var currentWatchingCount = 0
+                if (landmarksList.isNotEmpty() && blendshapesOpt.isPresent) {
+                    val allBlendshapes = blendshapesOpt.get()
+                    for (i in landmarksList.indices) {
+                        if (i < allBlendshapes.size) {
+                            val categories = allBlendshapes[i]
+                            val leftBlink = categories.find { it.categoryName() == "eyeBlinkLeft" }?.score() ?: 1f
+                            val rightBlink = categories.find { it.categoryName() == "eyeBlinkRight" }?.score() ?: 1f
+                            
+                            // A face is watching if at least one eye is open
+                            if (leftBlink < 0.3f || rightBlink < 0.3f) {
+                                currentWatchingCount++
+                            }
+                        }
                     }
                 }
+
+                // Trigger update event when state changes to zero observers
+                if (observersCount > 0 && currentWatchingCount == 0) {
+                    coroutineScope.launch { updateEvent.emit(Unit) }
+                }
+                observersCount = currentWatchingCount
             }
             .setErrorListener { error ->
                 Log.e("VisualContactEffect", "Face Landmarker Error: $error")
@@ -163,8 +168,7 @@ private fun CameraWithFaceDetection(
                     val (canvasWidth, canvasHeight) = size
                     val landmarksList = result.faceLandmarks()
                     
-                    if (landmarksList.isNotEmpty()) {
-                        val landmarks = landmarksList[0]
+                    for (landmarks in landmarksList) {
                         val eyeConnections = FaceLandmarker.FACE_LANDMARKS_LEFT_EYE + 
                                          FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE +
                                          FaceLandmarker.FACE_LANDMARKS_LEFT_IRIS +
@@ -192,8 +196,8 @@ private fun CameraWithFaceDetection(
             }
             
             Text(
-                text = if (observerPresent) "WATCHING" else "NOT WATCHING",
-                color = if (observerPresent) Color.Green else Color.Red,
+                text = "OBSERVERS: $observersCount",
+                color = if (observersCount > 0) Color.Green else Color.Red,
                 fontSize = 18.sp,
                 modifier = Modifier
                     .align(Alignment.TopStart)
