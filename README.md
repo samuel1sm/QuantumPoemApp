@@ -1,3 +1,12 @@
+# Quantum Poem App
+This app project is a tribute to the awesome game that Outer Wilds is, and to my wife who is
+obsessed with that game. It shows a simple love poem like the one we can encounter in the game,
+and to emulate the game mechanics around quantum objects, the camera runs in background, detecting
+if there is any observer present and swapping the verses placement when no one watches.
+
+
+## Development
+
 This is a Kotlin Multiplatform project targeting Android, iOS.
 
 * [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
@@ -9,7 +18,7 @@ This is a Kotlin Multiplatform project targeting Android, iOS.
     Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
     folder is the appropriate location.
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
+* [/iosApp](./iosApp/iosApp) contains iOS applications. Even ********if you’re sharing your UI with Compose Multiplatform,
   you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
 
 ### Build and Run Android Application

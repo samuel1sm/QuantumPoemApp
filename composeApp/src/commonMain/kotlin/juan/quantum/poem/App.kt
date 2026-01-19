@@ -2,6 +2,7 @@
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -9,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,12 +18,15 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import juan.quantum.poem.AppFonts
 import quantumpoemapp.composeapp.generated.resources.Res
 import quantumpoemapp.composeapp.generated.resources.background
 import quantumpoemapp.composeapp.generated.resources.board_1
 import quantumpoemapp.composeapp.generated.resources.board_2
 import quantumpoemapp.composeapp.generated.resources.board_3
 import quantumpoemapp.composeapp.generated.resources.board_4
+import juan.quantum.poem.VisualContactEffect
+import juan.quantum.poem.BackgroundMusicEffect
 
 data class SignText(
     val top: String,
@@ -33,7 +38,7 @@ data class SignText(
 data class BoardWithTextModel(
     val board: DrawableResource,
     val text: String,
-    val textOffsetY: Dp = 0.dp
+    val textOffsetBias: Float = 0f
 )
 
 @Composable
@@ -54,21 +59,22 @@ fun SignPostScreen(
         BoardWithTextModel(
             board = Res.drawable.board_2,
             text = texts.second,
-            textOffsetY = (10).toDp()
+            textOffsetBias = 0.05f
         ),
         BoardWithTextModel(
             board = Res.drawable.board_3,
             text = texts.third,
-            textOffsetY = (-80).toDp()
+            textOffsetBias = -0.15f
         ),
         BoardWithTextModel(
             board = Res.drawable.board_4,
             text = texts.bottom,
-            textOffsetY = (-60).toDp()
+            textOffsetBias = -0.1f
         )
     )
 
     var boards by remember(texts) { mutableStateOf(initialBoards) }
+    var isDebugMode by remember { mutableStateOf(false) }
     
     val scope = rememberCoroutineScope()
     val updateEvent = remember { MutableSharedFlow<Unit>() }
@@ -79,46 +85,69 @@ fun SignPostScreen(
         }
     }
 
-    // keep same “post” proportion
-    BoxWithConstraints(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-        ) {
-            // Background
-            Image(
-                painter = painterResource(Res.drawable.background),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
+    BackgroundMusicEffect("background.mp3")
 
-            Column {
-                boards.forEach { item ->
-                    BoardWithText(
-                        board = item.board,
-                        text = item.text,
-                        textOffsetY = item.textOffsetY
-                    )
+    Column(modifier = modifier.fillMaxSize()) {
+        val signPostModifier = if (isDebugMode) {
+            Modifier.weight(0.5f)
+        } else {
+            Modifier
+        }
+
+        BoxWithConstraints(
+            modifier = signPostModifier,
+            contentAlignment = Alignment.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+            ) {
+                // Background
+                Image(
+                    painter = painterResource(Res.drawable.background),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+
+                Column(
+                    modifier = Modifier.align(Alignment.TopCenter).fillMaxHeight(0.75f),
+                ) {
+                    boards.forEach { item ->
+                        BoardWithText(
+                            board = item.board,
+                            text = item.text,
+                            textOffsetBias = item.textOffsetBias,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
             }
+
+//            Row(
+//                modifier = Modifier.align(Alignment.BottomStart).padding(16.dp),
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Text("Debug Mode")
+//                Switch(
+//                    checked = isDebugMode,
+//                    onCheckedChange = { isDebugMode = it },
+//                    modifier = Modifier.padding(start = 8.dp)
+//                )
+//            }
+        }
+        
+        val visualContactModifier = if (isDebugMode) {
+            Modifier.weight(0.5f)
+        } else {
+            Modifier
         }
 
-        FloatingActionButton(
-            onClick = {
-                scope.launch {
-                    updateEvent.emit(Unit)
-                }
-            },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        ) {
-            Text("TEst")
-        }
+        VisualContactEffect(
+            updateEvent = updateEvent,
+            modifier = visualContactModifier,
+            isDebugMode = isDebugMode
+        )
     }
 }
 
@@ -128,19 +157,23 @@ private fun BoardWithText(
     board: DrawableResource,
     text: String,
     modifier: Modifier = Modifier,
-    textOffsetY: Dp = 0.dp
+    textOffsetBias: Float = 0f
 ) {
     val textStyle = TextStyle(
         color = Color(0xFFF2F2F2),
+        fontFamily = AppFonts.ComingSoonFamily(),
+        fontWeight = FontWeight.ExtraBold,
         fontSize = 22.sp,
         lineHeight = 24.sp,
         textAlign = TextAlign.Center
     )
 
-    Box(
+    BoxWithConstraints(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
+        val boardHeight = maxHeight
+
         Image(
             painter = painterResource(board),
             contentDescription = null,
@@ -151,7 +184,7 @@ private fun BoardWithText(
         Text(
             text = text,
             style = textStyle,
-            modifier = Modifier.offset(x = 0.dp, y = textOffsetY)
+            modifier = Modifier.offset(x = 0.dp, y = boardHeight * textOffsetBias)
         )
     }
 }
