@@ -26,6 +26,7 @@ import quantumpoemapp.composeapp.generated.resources.board_2
 import quantumpoemapp.composeapp.generated.resources.board_3
 import quantumpoemapp.composeapp.generated.resources.board_4
 import juan.quantum.poem.VisualContactEffect
+import juan.quantum.poem.BackgroundMusicEffect
 
 data class SignText(
     val top: String,
@@ -84,6 +85,8 @@ fun SignPostScreen(
         }
     }
 
+    BackgroundMusicEffect("background.mp3")
+
     Column(modifier = modifier.fillMaxSize()) {
         val signPostModifier = if (isDebugMode) {
             Modifier.weight(0.5f)
@@ -121,29 +124,17 @@ fun SignPostScreen(
                 }
             }
 
-            FloatingActionButton(
-                onClick = {
-                    scope.launch {
-                        updateEvent.emit(Unit)
-                    }
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp)
-            ) {
-                Text("Shuffle")
-            }
-            Row(
-                modifier = Modifier.align(Alignment.BottomStart).padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Debug Mode")
-                Switch(
-                    checked = isDebugMode,
-                    onCheckedChange = { isDebugMode = it },
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            }
+//            Row(
+//                modifier = Modifier.align(Alignment.BottomStart).padding(16.dp),
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Text("Debug Mode")
+//                Switch(
+//                    checked = isDebugMode,
+//                    onCheckedChange = { isDebugMode = it },
+//                    modifier = Modifier.padding(start = 8.dp)
+//                )
+//            }
         }
         
         val visualContactModifier = if (isDebugMode) {
